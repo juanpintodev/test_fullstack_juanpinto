@@ -1,0 +1,62 @@
+# ==========================================
+# CONFIGURACIÓN SIMPLE - BACKEND
+# ==========================================
+
+# Puerto donde correrá el servidor
+PORT=4000
+
+# Entorno (development, production)
+NODE_ENV=development
+
+# ==========================================
+# MONGODB ATLAS (Base de datos en la nube)
+# ==========================================
+# 1. Ve a https://www.mongodb.com/atlas
+# 2. Crea una cuenta gratis
+# 3. Crea un cluster gratuito
+# 4. En "Connect" -> "Connect your application"
+# 5. Copia la URL y reemplaza USERNAME, PASSWORD y CLUSTER_URL
+MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@CLUSTER_URL/tasklist?retryWrites=true&w=majority
+
+# ==========================================
+# AWS COGNITO (Autenticación)
+# ==========================================
+# 1. Ve a https://aws.amazon.com/
+# 2. Crea una cuenta (capa gratuita)
+# 3. Busca "Cognito" en la consola
+# 4. Crea un User Pool
+# 5. Anota estos valores:
+
+# Región de AWS (ej: us-east-1, eu-west-1)
+AWS_REGION=us-east-1
+
+# User Pool ID (formato: us-east-1_xxxxxxxxx)
+COGNITO_USER_POOL_ID=us-east-1_xxxxxxxxx
+
+# App Client ID (formato: xxxxxxxxxxxxxxxxxxxxxxxxxx)
+COGNITO_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# App Client Secret (formato: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
+COGNITO_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# ==========================================
+# JWT (Tokens de autenticación)
+# ==========================================
+# Crea una clave secreta fuerte (puedes usar: openssl rand -base64 32)
+JWT_SECRET=tu-clave-secreta-super-segura-aqui
+
+# Tiempo de expiración del token (ej: 24h, 7d)
+JWT_EXPIRES_IN=24h
+
+# ==========================================
+# EJEMPLO DE CONFIGURACIÓN COMPLETA:
+# ==========================================
+# PORT=4000
+# NODE_ENV=development
+# MONGODB_URI=mongodb+srv://miusuario:mipassword@cluster0.abc123.mongodb.net/tasklist?retryWrites=true&w=majority
+# AWS_REGION=us-east-1
+# COGNITO_USER_POOL_ID=us-east-1_ABC123DEF
+# COGNITO_CLIENT_ID=123456789abcdefghijk
+# COGNITO_CLIENT_SECRET=abcdefghijk123456789abcdefghijk123456789abcdefghijk
+# JWT_SECRET=mi-clave-secreta-super-segura-123456789
+# JWT_EXPIRES_IN=24h 
