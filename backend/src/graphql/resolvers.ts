@@ -1,3 +1,4 @@
+// Resolvers de GraphQL para operaciones de tareas y autenticación
 import { Task, ITask } from "../models/Task";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 
@@ -14,7 +15,7 @@ interface Context {
 
 function requireAuth(context: Context): void {
   if (!context.isAuthenticated || !context.user) {
-    throw new AuthenticationError("You must be logged in to do this");
+    throw new AuthenticationError("Authentication required");
   }
 }
 
@@ -143,12 +144,6 @@ export const resolvers = {
       context: Context
     ): Promise<ITask> => {
       requireAuth(context);
-
-      console.log(
-        `Cloud Function: Marking task ${id} as done for user ${
-          context.user!.uid
-        }`
-      );
 
       const task = await Task.findById(id);
       if (!task) {

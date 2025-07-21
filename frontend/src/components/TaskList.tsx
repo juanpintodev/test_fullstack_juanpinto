@@ -23,13 +23,14 @@ import {
 import { format } from "date-fns";
 import { Task } from "@/types/task";
 
-// Props that this component receives
 interface TaskListProps {
-  tasks: Task[]; // Array of tasks to display
-  onDelete: (taskId: string) => void; // Function to delete a task
-  onMarkAsDone: (taskId: string) => void; // Function to mark task as done
-  onEdit: (task: Task) => void; // Function to edit a task
+  tasks: Task[];
+  onDelete: (taskId: string) => void;
+  onMarkAsDone: (taskId: string) => void;
+  onEdit: (task: Task) => void;
 }
+
+// Componente que muestra la lista de tareas del usuario autenticado
 
 // Helper function to get color for priority
 const getPriorityColor = (priority: string) => {
@@ -75,7 +76,7 @@ export default function TaskList({
   return (
     <Box sx={{ width: isMobile ? "100%" : 600, mx: "auto" }}>
       <List>
-        {tasks.map((task) => (
+        {tasks.map((task: Task) => (
           <Paper key={task.id} elevation={1} sx={{ mb: 2, width: "100%" }}>
             <ListItem
               sx={{

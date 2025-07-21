@@ -1,9 +1,24 @@
 import { Task, ITask } from "../models/Task";
 import { resolvers } from "../graphql/resolvers";
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
+
+let mongoServer: MongoMemoryServer;
+
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  const mongoUri = mongoServer.getUri();
+  await mongoose.connect(mongoUri);
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});
 
 const mockContext = {
   user: {
-    sub: "test-user-id",
+    uid: "test-user-id",
     email: "test@example.com",
     username: "testuser",
     groups: [],
@@ -33,7 +48,7 @@ describe("Task Model", () => {
     expect(savedTask.userId).toBe(taskData.userId);
     expect(savedTask.completed).toBe(false);
     expect(savedTask.priority).toBe(taskData.priority);
-  });
+  }, 20000); // 20 segundos
 
   it("should require title field", async () => {
     const taskData = {
@@ -151,7 +166,7 @@ describe("GraphQL Resolvers", () => {
       expect(result.title).toBe(input.title);
       expect(result.description).toBe(input.description);
       expect(result.priority).toBe(input.priority);
-      expect(result.userId).toBe(mockContext.user!.sub);
+      expect(result.userId).toBe(mockContext.user!.uid);
       expect(result.completed).toBe(false);
     });
 
@@ -168,7 +183,7 @@ describe("GraphQL Resolvers", () => {
 
       const result = await resolvers.Mutation.updateTask(
         null,
-        { id: task._id.toString(), input },
+        { id: task.id.toString(), input },
         mockContext
       );
 
@@ -184,13 +199,13 @@ describe("GraphQL Resolvers", () => {
 
       const result = await resolvers.Mutation.deleteTask(
         null,
-        { id: task._id.toString() },
+        { id: task.id.toString() },
         mockContext
       );
 
       expect(result).toBe(true);
 
-      const deletedTask = await Task.findById(task._id);
+      const deletedTask = await Task.findById(task.id);
       expect(deletedTask).toBeNull();
     });
 
@@ -203,7 +218,7 @@ describe("GraphQL Resolvers", () => {
 
       const result = await resolvers.Mutation.markTaskAsDone(
         null,
-        { id: task._id.toString() },
+        { id: task.id.toString() },
         mockContext
       );
 
@@ -220,7 +235,7 @@ describe("GraphQL Resolvers", () => {
       // Toggle to completed
       const result1 = await resolvers.Mutation.toggleTaskCompletion(
         null,
-        { id: task._id.toString() },
+        { id: task.id.toString() },
         mockContext
       );
       expect(result1.completed).toBe(true);
@@ -228,7 +243,7 @@ describe("GraphQL Resolvers", () => {
       // Toggle back to incomplete
       const result2 = await resolvers.Mutation.toggleTaskCompletion(
         null,
-        { id: task._id.toString() },
+        { id: task.id.toString() },
         mockContext
       );
       expect(result2.completed).toBe(false);

@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// Define what a Task looks like
+// Modelo de datos para las tareas en MongoDB usando Mongoose
 export interface ITask extends Document {
   title: string; // Task title (required)
   description?: string; // Task description (optional)

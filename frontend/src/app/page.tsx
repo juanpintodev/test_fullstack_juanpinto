@@ -21,6 +21,7 @@ import TaskForm from "@/components/TaskForm";
 import AuthComponent from "@/components/AuthComponent";
 import { Task } from "@/types/task";
 
+// Página principal de la aplicación: maneja autenticación y muestra las tareas del usuario
 export default function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -120,10 +121,7 @@ export default function HomePage() {
           <Typography variant="h4" component="h1">
             My Tasks
           </Typography>
-          <Stack
-            direction={isMobile ? "column" : "row"}
-            spacing={0.5} // Espacio mínimo entre botones (4px)
-          >
+          <Stack direction={isMobile ? "column" : "row"} spacing={0.5}>
             <Button
               variant="contained"
               onClick={() => setShowTaskForm(true)}
