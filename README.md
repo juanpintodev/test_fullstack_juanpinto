@@ -1,43 +1,21 @@
-# Task List App
+# How to run
 
-A simple task list app with login and CRUD operations.
+########## NOTE ##########
+I couldn't perform the Auth with (AWS) because AWS has
+an approval period for the free tier profile of 3 to 5
+days and that is outside the time limit that you set for
+me to deliver the test, that's why I used FIREBASE
+##########################
 
-## What it does
-
-- Create tasks
-- Edit tasks
-- Delete tasks
-- Mark tasks as done
-- User login/logout
-- Store data in cloud database
-
-## Tech Stack
-
-**Frontend:**
-
-- Next.js
-- Material-UI
-- GraphQL
-- Firebase Authentication
-
-**Backend:**
-
-- Express.js
-- GraphQL
-- MongoDB
-- Firebase Admin SDK
-
-## How to run
-
-### 1. Install dependencies
+# 1. Install dependencies
 
 ```bash
 npm install
 cd backend && npm install
-cd ../frontend && npm install
+cd frontend && npm install
 ```
 
-### 2. Set up environment variables
+# 2. Set up environment variables "If you have a Firebase and a MongoDB account"
 
 **Backend (.env):**
 
@@ -61,25 +39,19 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
 ```
 
-### 3. Set up services
+######## ELSE ###########
 
-**MongoDB Atlas:**
+**Backend (.env):**
+I will send you a separate file by email with the content for
+the configuration you need to do for the .env in the
+backend folder
 
-1. Go to mongodb.com/atlas
-2. Create free account
-3. Create cluster
-4. Get connection string
-5. Put it in MONGODB_URI
+**Frontend (.env.local):**
+I will send you a separate file by email with the content for
+the configuration you need to do for the .env in the
+frontend folder
 
-**Firebase:**
-
-1. Go to console.firebase.google.com
-2. Create new project
-3. Enable Authentication (Email/Password)
-4. Get configuration from Project Settings
-5. Download Service Account key for backend
-
-### 4. Run the app
+### 3. Run the app
 
 ```bash
 # Terminal 1 - Backend
