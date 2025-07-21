@@ -4,12 +4,13 @@ import { useState } from "react";
 import {
   Box,
   Paper,
-  Tabs,
-  Tab,
   TextField,
   Button,
   Typography,
   Alert,
+  Stack,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   signInWithEmailAndPassword,
@@ -44,28 +45,43 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+// Función para traducir y personalizar los mensajes de error de Firebase
+function getFirebaseAuthErrorMessage(error: any) {
+  if (!error || !error.code) return "Ocurrió un error desconocido.";
+  switch (error.code) {
+    case "auth/invalid-email":
+      return "El correo electrónico no es válido.";
+    case "auth/user-not-found":
+      return "No existe una cuenta con este correo.";
+    case "auth/wrong-password":
+      return "La contraseña es incorrecta.";
+    case "auth/email-already-in-use":
+      return "Este correo ya está registrado.";
+    case "auth/weak-password":
+      return "La contraseña debe tener al menos 6 caracteres.";
+    default:
+      return "Error de autenticación. No esta registrado o introdujo un dato incorrecto";
+  }
+}
+
 export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
-  const [tabValue, setTabValue] = useState(0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<any>("");
   const [loading, setLoading] = useState(false);
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-    setError("");
-  };
+  const theme = useTheme();
+  const isMobile = useMediaQuery("(max-width:425px)");
+  const isVerySmall = useMediaQuery("(max-width:375px)");
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
       await signInWithEmailAndPassword(auth, email, password);
       onAuthSuccess();
     } catch (error: any) {
-      setError(error.message);
+      setError(error); // Guarda el error completo para traducirlo
     } finally {
       setLoading(false);
     }
@@ -75,98 +91,94 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       onAuthSuccess();
     } catch (error: any) {
-      setError(error.message);
+      setError(error); // Guarda el error completo para traducirlo
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Paper elevation={3} sx={{ maxWidth: 400, mx: "auto" }}>
-      <Tabs value={tabValue} onChange={handleTabChange} centered>
-        <Tab label="Sign In" />
-        <Tab label="Sign Up" />
-      </Tabs>
-
-      <TabPanel value={tabValue} index={0}>
-        <form onSubmit={handleSignIn}>
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-            required
-          />
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
+    <Paper
+      elevation={isMobile ? 0 : 3}
+      sx={{
+        width: isMobile ? "100%" : 400,
+        maxWidth: isMobile ? "100%" : 400,
+        ml: isMobile ? 0 : "auto",
+        mr: isMobile ? 0 : "auto",
+        px: isMobile ? 2 : 2,
+        py: 3,
+        borderRadius: isMobile ? 0 : 2,
+        boxSizing: "border-box",
+      }}
+    >
+      <Typography variant="h5" align="center" mb={2}>
+        Welcome
+      </Typography>
+      <form>
+        <TextField
+          fullWidth
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          margin="normal"
+          required
+        />
+        <TextField
+          fullWidth
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          margin="normal"
+          required
+          helperText="Password must be at least 6 characters"
+        />
+        {error && (
+          <Alert
+            severity="error"
+            sx={{
+              mt: 2,
+              fontWeight: "bold",
+              color: "#fff",
+              background: "linear-gradient(90deg, #d32f2f 60%, #ff7961 100%)",
+              borderRadius: 2,
+              boxShadow: 2,
+              fontSize: "1rem",
+              letterSpacing: "0.5px",
+            }}
+            icon={false}
+          >
+            {getFirebaseAuthErrorMessage(error)}
+          </Alert>
+        )}
+        <Stack direction={isVerySmall ? "column" : "row"} spacing={2} mt={3}>
           <Button
-            type="submit"
-            fullWidth
+            type="button"
+            fullWidth={isMobile}
             variant="contained"
-            sx={{ mt: 3 }}
+            color="primary"
             disabled={loading}
+            onClick={handleSignIn}
           >
             {loading ? "Signing In..." : "Sign In"}
           </Button>
-        </form>
-      </TabPanel>
-
-      <TabPanel value={tabValue} index={1}>
-        <form onSubmit={handleSignUp}>
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-            required
-            helperText="Password must be at least 6 characters"
-          />
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
           <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3 }}
+            type="button"
+            fullWidth={isMobile}
+            variant="outlined"
+            color="primary"
             disabled={loading}
+            onClick={handleSignUp}
           >
             {loading ? "Creating Account..." : "Sign Up"}
           </Button>
-        </form>
-      </TabPanel>
+        </Stack>
+      </form>
     </Paper>
   );
 }

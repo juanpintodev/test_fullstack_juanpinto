@@ -77,3 +77,4 @@ echo "   - Edita frontend/.env.local y backend/.env"
 echo ""
 echo "3. Ejecuta la aplicación:"
 echo "   ./quick-start.sh"
+ 

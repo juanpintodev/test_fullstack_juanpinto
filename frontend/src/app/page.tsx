@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import {
   Container,
   Box,
@@ -9,6 +9,8 @@ import {
   Button,
   CircularProgress,
   Alert,
+  Stack,
+  useMediaQuery,
 } from "@mui/material";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -43,11 +45,12 @@ export default function HomePage() {
 
     return () => unsubscribe();
   }, []);
-
+  const client = useApolloClient();
   const handleSignOut = async () => {
     try {
       await signOut(auth);
       setIsAuthenticated(false);
+      await client.resetStore();
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -80,6 +83,8 @@ export default function HomePage() {
     refetch();
   };
 
+  const isMobile = useMediaQuery("(max-width:425px)");
+
   if (!isAuthenticated) {
     return (
       <Container maxWidth="sm">
@@ -87,7 +92,12 @@ export default function HomePage() {
           <Typography variant="h3" component="h1" gutterBottom>
             Task List App
           </Typography>
-          <Typography variant="h6" color="text.secondary" gutterBottom>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            gutterBottom
+            component="span"
+          >
             Sign in to manage your tasks
           </Typography>
           <AuthComponent onAuthSuccess={() => setIsAuthenticated(true)} />
@@ -104,13 +114,15 @@ export default function HomePage() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 3,
           }}
         >
           <Typography variant="h4" component="h1">
             My Tasks
           </Typography>
-          <Box>
+          <Stack
+            direction={isMobile ? "column" : "row"}
+            spacing={0.5} // Espacio mínimo entre botones (4px)
+          >
             <Button
               variant="contained"
               onClick={() => setShowTaskForm(true)}
@@ -121,7 +133,7 @@ export default function HomePage() {
             <Button variant="outlined" onClick={handleSignOut}>
               Sign Out
             </Button>
-          </Box>
+          </Stack>
         </Box>
 
         {error && (

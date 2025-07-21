@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   TextField,
   Button,
   FormControl,
@@ -15,6 +14,9 @@ import {
   MenuItem,
   Alert,
   Box,
+  Stack,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { CREATE_TASK, UPDATE_TASK } from "@/graphql/mutations";
 import { GET_TASKS } from "@/graphql/queries";
@@ -45,6 +47,10 @@ export default function TaskForm({ open, onClose, task }: TaskFormProps) {
 
   const isEditing = !!task;
   const loading = createLoading || updateLoading;
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery("(max-width:425px)");
+  const isVerySmall = useMediaQuery("(max-width:375px)");
 
   useEffect(() => {
     if (task) {
@@ -121,7 +127,20 @@ export default function TaskForm({ open, onClose, task }: TaskFormProps) {
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{isEditing ? "Edit Task" : "Create New Task"}</DialogTitle>
 
-      <Box component="form" onSubmit={handleSubmit}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          width: isMobile ? "100%" : 600,
+          maxWidth: isMobile ? "100%" : 600,
+          ml: isMobile ? 0 : 0,
+          mr: isMobile ? 0 : 0,
+          px: isMobile ? 2 : 2, // padding horizontal en móvil y desktop
+          py: 3,
+          borderRadius: isMobile ? 0 : 2,
+          boxSizing: "border-box",
+        }}
+      >
         <DialogContent>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
@@ -175,11 +194,21 @@ export default function TaskForm({ open, onClose, task }: TaskFormProps) {
           />
         </DialogContent>
 
-        <DialogActions>
-          <Button onClick={onClose} disabled={loading}>
+        <Stack
+          direction={isVerySmall ? "column" : "row"}
+          spacing={2}
+          mt={3}
+          justifyContent="center"
+        >
+          <Button onClick={onClose} disabled={loading} fullWidth={isMobile}>
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={loading}
+            fullWidth={isMobile}
+          >
             {loading
               ? isEditing
                 ? "Updating..."
@@ -188,7 +217,7 @@ export default function TaskForm({ open, onClose, task }: TaskFormProps) {
               ? "Update Task"
               : "Create Task"}
           </Button>
-        </DialogActions>
+        </Stack>
       </Box>
     </Dialog>
   );
