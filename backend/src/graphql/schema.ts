@@ -25,11 +25,6 @@ export const typeDefs = gql`
     username: String!
   }
 
-  type AuthPayload {
-    token: String!
-    user: User!
-  }
-
   input CreateTaskInput {
     title: String!
     description: String
@@ -46,47 +41,17 @@ export const typeDefs = gql`
   }
 
   type Query {
-    # Get all tasks for the authenticated user
     tasks: [Task!]!
-
-    # Get a specific task by ID
     task(id: ID!): Task
-
-    # Get tasks filtered by completion status
     tasksByStatus(completed: Boolean!): [Task!]!
-
-    # Get tasks filtered by priority
-    tasksByPriority(priority: Priority!): [Task!]!
-
-    # Get current user information
     me: User
   }
 
   type Mutation {
-    # Create a new task
     createTask(input: CreateTaskInput!): Task!
-
-    # Update an existing task
     updateTask(id: ID!, input: UpdateTaskInput!): Task!
-
-    # Delete a task
     deleteTask(id: ID!): Boolean!
-
-    # Mark a task as completed (Cloud Function/Web Service)
     markTaskAsDone(id: ID!): Task!
-
-    # Toggle task completion status
     toggleTaskCompletion(id: ID!): Task!
-
-    # Bulk operations
-    markMultipleTasksAsDone(ids: [ID!]!): [Task!]!
-    deleteMultipleTasks(ids: [ID!]!): Boolean!
-  }
-
-  type Subscription {
-    # Real-time updates for task changes
-    taskUpdated: Task!
-    taskCreated: Task!
-    taskDeleted: ID!
   }
 `;

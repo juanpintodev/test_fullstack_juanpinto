@@ -101,7 +101,6 @@ export const DELETE_MULTIPLE_TASKS = gql`
   }
 `;
 
-// Type-safe mutation hooks
 export type CreateTaskMutation = CreateTaskMutationResult;
 export type UpdateTaskMutation = UpdateTaskMutationResult;
 export type DeleteTaskMutation = DeleteTaskMutationResult;

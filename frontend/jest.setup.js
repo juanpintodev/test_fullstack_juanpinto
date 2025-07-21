@@ -24,18 +24,11 @@ jest.mock("next/router", () => ({
   },
 }));
 
-// Mock AWS Amplify
-jest.mock("aws-amplify", () => ({
-  Amplify: {
-    configure: jest.fn(),
-  },
-  Auth: {
-    currentAuthenticatedUser: jest.fn(),
-    signIn: jest.fn(),
-    signOut: jest.fn(),
-    signUp: jest.fn(),
-    confirmSignUp: jest.fn(),
-    forgotPassword: jest.fn(),
-    forgotPasswordSubmit: jest.fn(),
-  },
+// Mock Firebase
+jest.mock("firebase/auth", () => ({
+  getAuth: jest.fn(),
+  signInWithEmailAndPassword: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  onAuthStateChanged: jest.fn(),
 }));

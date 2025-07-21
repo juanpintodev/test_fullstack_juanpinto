@@ -1,21 +1,21 @@
-const express = require("express");
-const cors = require("cors");
-const { ApolloServer } = require("apollo-server-express");
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { ApolloServer } from "apollo-server-express";
 
-// Import our files
-const { connectDB } = require("./config/database");
-const { typeDefs } = require("./graphql/schema");
-const { resolvers } = require("./graphql/resolvers");
-const { authMiddleware } = require("./middleware/auth");
+import { connectDB } from "./config/database";
+import { typeDefs } from "./graphql/schema";
+import { resolvers } from "./graphql/resolvers";
+import { authMiddleware } from "./middleware/auth";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    // origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -23,46 +23,40 @@ app.use(
 app.use(express.json());
 app.use(authMiddleware);
 
-// Simple health check
 app.get("/health", (req, res) => {
   res.json({
     status: "OK",
-    message: "Server is running",
-    time: new Date().toISOString(),
+    message: "Task List API is running",
+    timestamp: new Date().toISOString(),
   });
 });
 
-// Start server function
 async function startServer() {
   try {
-    // Connect to database
-    console.log("Connecting to database...");
+    console.log("Connecting to MongoDB...");
     await connectDB();
-    console.log("Database connected!");
+    console.log("Connected to MongoDB successfully");
 
-    // Create GraphQL server
     const server = new ApolloServer({
       typeDefs,
       resolvers,
-      context: ({ req }) => {
-        return {
-          user: req.user,
-          isAuthenticated: !!req.user,
-        };
-      },
+      context: ({ req }) => ({
+        user: req.user,
+        isAuthenticated: !!req.user,
+      }),
     });
 
     await server.start();
-    server.applyMiddleware({ app, path: "/graphql" });
+    server.applyMiddleware({ app: app as any, path: "/graphql" });
 
-    // Start the server
     app.listen(PORT, () => {
       console.log("Server is running!");
-      console.log(`Backend: http://localhost:${PORT}`);
-      console.log(`GraphQL: http://localhost:${PORT}/graphql`);
+      console.log(`Backend URL: http://localhost:${PORT}`);
+      console.log(`GraphQL Playground: http://localhost:${PORT}/graphql`);
+      console.log(`Health Check: http://localhost:${PORT}/health`);
     });
   } catch (error) {
-    console.error("Error starting server:", error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 }

@@ -81,7 +81,6 @@ export const GET_ME = gql`
   }
 `;
 
-// Type-safe query hooks
 export type GetTasksQuery = TasksQueryResult;
 export type GetTaskQuery = TaskQueryResult;
 export type GetTasksByStatusQuery = TasksByStatusQueryResult;

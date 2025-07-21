@@ -24,9 +24,9 @@ git add .
 echo "Creating initial commit..."
 git commit -m "Initial commit: Task List Application with authentication and CRUD operations
 
-- Frontend: Next.js with TypeScript, Material-UI, AWS Amplify
+- Frontend: Next.js with TypeScript, Material-UI, Firebase
 - Backend: Express.js with TypeScript, GraphQL, MongoDB
-- Authentication: AWS Cognito
+- Authentication: Firebase
 - Testing: Jest unit tests + Cypress e2e tests
 - Cloud Function: markTaskAsDone resolver
 - Complete CRUD operations for tasks"
@@ -59,5 +59,5 @@ echo "└── install.sh        # Installation script"
 echo ""
 echo " Remember to:"
 echo "- Set up environment variables (.env files)"
-echo "- Configure AWS Cognito and MongoDB Atlas"
+echo "- Configure Firebase and MongoDB Atlas"
 echo "- Update README.md with your specific setup instructions" 

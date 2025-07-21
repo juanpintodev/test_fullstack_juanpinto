@@ -18,14 +18,14 @@ A simple task list app with login and CRUD operations.
 - Next.js
 - Material-UI
 - GraphQL
-- AWS Amplify for auth
+- Firebase Authentication
 
 **Backend:**
 
 - Express.js
 - GraphQL
 - MongoDB
-- JWT for auth
+- Firebase Admin SDK
 
 ## How to run
 
@@ -44,16 +44,21 @@ cd ../frontend && npm install
 ```
 PORT=4000
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/tasklist
-JWT_SECRET=your-secret-key
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_CLIENT_EMAIL=your-service-account-email
+FIREBASE_PRIVATE_KEY=your-private-key
 ```
 
 **Frontend (.env.local):**
 
 ```
 NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql
-NEXT_PUBLIC_AWS_REGION=us-east-1
-NEXT_PUBLIC_COGNITO_USER_POOL_ID=your-pool-id
-NEXT_PUBLIC_COGNITO_CLIENT_ID=your-client-id
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
 ```
 
 ### 3. Set up services
@@ -66,13 +71,13 @@ NEXT_PUBLIC_COGNITO_CLIENT_ID=your-client-id
 4. Get connection string
 5. Put it in MONGODB_URI
 
-**AWS Cognito:**
+**Firebase:**
 
-1. Go to aws.amazon.com
-2. Create account (free tier)
-3. Find Cognito service
-4. Create User Pool
-5. Get Pool ID and Client ID
+1. Go to console.firebase.google.com
+2. Create new project
+3. Enable Authentication (Email/Password)
+4. Get configuration from Project Settings
+5. Download Service Account key for backend
 
 ### 4. Run the app
 
@@ -90,9 +95,9 @@ npm run dev
 
 ## How it works
 
-1. User logs in with AWS Cognito
-2. Frontend sends GraphQL requests to backend
-3. Backend checks JWT token
+1. User logs in with Firebase Authentication
+2. Frontend sends GraphQL requests to backend with Firebase ID token
+3. Backend verifies Firebase ID token
 4. Backend saves/gets data from MongoDB
 5. Frontend shows the data
 

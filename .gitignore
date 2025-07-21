@@ -109,8 +109,11 @@ cypress/screenshots/
 # MongoDB
 *.db
 
-# AWS
-.aws/
+# Firebase
+firebase-debug.log
+firebase-debug.*.log
+firebase-export-*
+firebase-import-export-*
 
 # Local development
 .local/ 

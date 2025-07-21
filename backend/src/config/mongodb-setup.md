@@ -12,7 +12,7 @@ This guide will help you set up MongoDB Atlas (cloud database) for the Task List
 
 1. Click "Build a Database"
 2. Choose "FREE" tier (M0)
-3. Select your preferred cloud provider (AWS, Google Cloud, or Azure)
+3. Select your preferred cloud provider (Google Cloud, Azure, or AWS)
 4. Choose a region close to you
 5. Click "Create"
 

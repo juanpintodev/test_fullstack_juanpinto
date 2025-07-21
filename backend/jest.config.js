@@ -7,5 +7,4 @@ module.exports = {
     "^.+\\.ts$": "ts-jest",
   },
   collectCoverageFrom: ["src/**/*.ts", "!src/**/*.d.ts"],
-  setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],
 };

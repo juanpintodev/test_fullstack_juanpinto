@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Auth } from "aws-amplify";
 import { useQuery, useMutation } from "@apollo/client";
 import {
   Container,
@@ -11,6 +10,8 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { GET_TASKS } from "@/graphql/queries";
 import { DELETE_TASK, MARK_TASK_AS_DONE } from "@/graphql/mutations";
 import TaskList from "@/components/TaskList";
@@ -19,50 +20,39 @@ import AuthComponent from "@/components/AuthComponent";
 import { Task } from "@/types/task";
 
 export default function HomePage() {
-  // State variables
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  // GraphQL queries and mutations
   const { data, loading, error, refetch } = useQuery(GET_TASKS, {
-    skip: !isAuthenticated, // Only run query if user is logged in
+    skip: !isAuthenticated,
   });
 
   const [deleteTask] = useMutation(DELETE_TASK, {
-    refetchQueries: [{ query: GET_TASKS }], // Refresh task list after deletion
+    refetchQueries: [{ query: GET_TASKS }],
   });
 
   const [markTaskAsDone] = useMutation(MARK_TASK_AS_DONE, {
-    refetchQueries: [{ query: GET_TASKS }], // Refresh task list after marking as done
+    refetchQueries: [{ query: GET_TASKS }],
   });
 
-  // Check if user is logged in when page loads
   useEffect(() => {
-    checkAuthStatus();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  // Function to check if user is logged in
-  const checkAuthStatus = async () => {
-    try {
-      await Auth.currentAuthenticatedUser();
-      setIsAuthenticated(true);
-    } catch (error) {
-      setIsAuthenticated(false);
-    }
-  };
-
-  // Function to sign out
   const handleSignOut = async () => {
     try {
-      await Auth.signOut();
+      await signOut(auth);
       setIsAuthenticated(false);
     } catch (error) {
       console.error("Error signing out:", error);
     }
   };
 
-  // Function to delete a task
   const handleDeleteTask = async (taskId: string) => {
     try {
       await deleteTask({ variables: { id: taskId } });
@@ -71,7 +61,6 @@ export default function HomePage() {
     }
   };
 
-  // Function to mark a task as done
   const handleMarkAsDone = async (taskId: string) => {
     try {
       await markTaskAsDone({ variables: { id: taskId } });
@@ -80,20 +69,17 @@ export default function HomePage() {
     }
   };
 
-  // Function to edit a task
   const handleEditTask = (task: Task) => {
     setSelectedTask(task);
     setShowTaskForm(true);
   };
 
-  // Function to close the task form
   const handleTaskFormClose = () => {
     setShowTaskForm(false);
     setSelectedTask(null);
-    refetch(); // Refresh the task list
+    refetch();
   };
 
-  // Show login page if user is not authenticated
   if (!isAuthenticated) {
     return (
       <Container maxWidth="sm">
@@ -104,17 +90,15 @@ export default function HomePage() {
           <Typography variant="h6" color="text.secondary" gutterBottom>
             Sign in to manage your tasks
           </Typography>
-          <AuthComponent onAuthSuccess={checkAuthStatus} />
+          <AuthComponent onAuthSuccess={() => setIsAuthenticated(true)} />
         </Box>
       </Container>
     );
   }
 
-  // Show main task list page
   return (
     <Container maxWidth="md">
       <Box sx={{ mt: 4, mb: 4 }}>
-        {/* Header with title and buttons */}
         <Box
           sx={{
             display: "flex",
@@ -140,20 +124,17 @@ export default function HomePage() {
           </Box>
         </Box>
 
-        {/* Show error message if there's an error */}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             Error loading tasks: {error.message}
           </Alert>
         )}
 
-        {/* Show loading spinner while loading */}
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
             <CircularProgress />
           </Box>
         ) : (
-          /* Show task list */
           <TaskList
             tasks={data?.tasks || []}
             onDelete={handleDeleteTask}
@@ -162,7 +143,6 @@ export default function HomePage() {
           />
         )}
 
-        {/* Task form dialog */}
         <TaskForm
           open={showTaskForm}
           onClose={handleTaskFormClose}

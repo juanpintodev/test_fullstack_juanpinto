@@ -1,17 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Auth } from "aws-amplify";
 import {
   Box,
-  Button,
-  TextField,
-  Typography,
-  Alert,
   Paper,
   Tabs,
   Tab,
+  TextField,
+  Button,
+  Typography,
+  Alert,
 } from "@mui/material";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 interface AuthComponentProps {
   onAuthSuccess: () => void;
@@ -43,7 +48,6 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
   const [tabValue, setTabValue] = useState(0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -58,10 +62,10 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
     setError("");
 
     try {
-      await Auth.signIn(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       onAuthSuccess();
     } catch (error: any) {
-      setError(error.message || "An error occurred during sign in");
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -72,25 +76,11 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
     setLoading(true);
     setError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
     try {
-      await Auth.signUp({
-        username: email,
-        password,
-        attributes: {
-          email,
-        },
-      });
-      setError("");
-      setTabValue(0); // Switch to sign in tab
-      alert("Account created successfully! Please sign in.");
+      await createUserWithEmailAndPassword(auth, email, password);
+      onAuthSuccess();
     } catch (error: any) {
-      setError(error.message || "An error occurred during sign up");
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -104,17 +94,7 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
       </Tabs>
 
       <TabPanel value={tabValue} index={0}>
-        <Box component="form" onSubmit={handleSignIn}>
-          <Typography variant="h6" gutterBottom>
-            Sign In
-          </Typography>
-
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
+        <form onSubmit={handleSignIn}>
           <TextField
             fullWidth
             label="Email"
@@ -124,7 +104,6 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
             margin="normal"
             required
           />
-
           <TextField
             fullWidth
             label="Password"
@@ -134,31 +113,25 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
             margin="normal"
             required
           />
-
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
           <Button
             type="submit"
             fullWidth
             variant="contained"
+            sx={{ mt: 3 }}
             disabled={loading}
-            sx={{ mt: 3, mb: 2 }}
           >
             {loading ? "Signing In..." : "Sign In"}
           </Button>
-        </Box>
+        </form>
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
-        <Box component="form" onSubmit={handleSignUp}>
-          <Typography variant="h6" gutterBottom>
-            Create Account
-          </Typography>
-
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
+        <form onSubmit={handleSignUp}>
           <TextField
             fullWidth
             label="Email"
@@ -168,7 +141,6 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
             margin="normal"
             required
           />
-
           <TextField
             fullWidth
             label="Password"
@@ -177,28 +149,23 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
             onChange={(e) => setPassword(e.target.value)}
             margin="normal"
             required
+            helperText="Password must be at least 6 characters"
           />
-
-          <TextField
-            fullWidth
-            label="Confirm Password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            margin="normal"
-            required
-          />
-
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
           <Button
             type="submit"
             fullWidth
             variant="contained"
+            sx={{ mt: 3 }}
             disabled={loading}
-            sx={{ mt: 3, mb: 2 }}
           >
             {loading ? "Creating Account..." : "Sign Up"}
           </Button>
-        </Box>
+        </form>
       </TabPanel>
     </Paper>
   );

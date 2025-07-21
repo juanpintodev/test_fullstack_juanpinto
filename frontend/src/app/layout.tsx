@@ -4,13 +4,6 @@ import { ApolloProvider } from "@apollo/client";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { client } from "@/lib/apollo-client";
-import { configureAmplify } from "@/lib/amplify-config";
-import { useEffect } from "react";
-
-// Configure Amplify on client side
-if (typeof window !== "undefined") {
-  configureAmplify();
-}
 
 const theme = createTheme({
   palette: {
