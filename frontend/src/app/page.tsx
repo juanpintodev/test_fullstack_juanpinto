@@ -54,6 +54,7 @@ export default function HomePage() {
     } catch (error) {
       console.error("Error signing out:", error);
     }
+    window.location.reload();
   };
 
   const handleDeleteTask = async (taskId: string) => {

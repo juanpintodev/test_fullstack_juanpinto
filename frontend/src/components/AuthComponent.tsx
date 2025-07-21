@@ -72,6 +72,7 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width:425px)");
   const isVerySmall = useMediaQuery("(max-width:375px)");
+  const [showPasswordAlert, setShowPasswordAlert] = useState(false);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,6 +94,8 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
     setError("");
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      setShowPasswordAlert(true); // Muestra el alert solo al crear la cuenta
+      localStorage.setItem("hasLoggedIn", "true");
       onAuthSuccess();
     } catch (error: any) {
       setError(error); // Guarda el error completo para traducirlo
@@ -154,6 +157,11 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
             icon={false}
           >
             {getFirebaseAuthErrorMessage(error)}
+          </Alert>
+        )}
+        {showPasswordAlert && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            Por seguridad, te recomendamos cambiar tu contraseña.
           </Alert>
         )}
         <Stack direction={isVerySmall ? "column" : "row"} spacing={2} mt={3}>
