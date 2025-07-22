@@ -30,7 +30,7 @@ interface TaskListProps {
   onEdit: (task: Task) => void;
 }
 
-// Componente que muestra la lista de tareas del usuario autenticado
+// Component that displays the authenticated user's task list
 
 // Helper function to get color for priority
 const getPriorityColor = (priority: string) => {

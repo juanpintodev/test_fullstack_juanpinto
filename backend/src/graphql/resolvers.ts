@@ -1,4 +1,4 @@
-// Resolvers de GraphQL para operaciones de tareas y autenticación
+// GraphQL resolvers for task operations and authentication
 import { Task, ITask } from "../models/Task";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 

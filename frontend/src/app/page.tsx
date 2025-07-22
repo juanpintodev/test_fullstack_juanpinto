@@ -21,7 +21,7 @@ import TaskForm from "@/components/TaskForm";
 import AuthComponent from "@/components/AuthComponent";
 import { Task } from "@/types/task";
 
-// Página principal de la aplicación: maneja autenticación y muestra las tareas del usuario
+// Main page of the app: handles authentication and displays the user's tasks
 export default function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);

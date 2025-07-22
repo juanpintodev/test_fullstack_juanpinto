@@ -1,4 +1,4 @@
-// Punto de entrada principal del backend: configura Express, Apollo Server y la conexión a MongoDB
+// Main entry point for the backend: sets up Express, Apollo Server, and MongoDB connection
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
