@@ -50,17 +50,17 @@ function getFirebaseAuthErrorMessage(error: any) {
   if (!error || !error.code) return "Ocurrió un error desconocido.";
   switch (error.code) {
     case "auth/invalid-email":
-      return "El correo electrónico no es válido.";
+      return "Invalid email.";
     case "auth/user-not-found":
-      return "No existe una cuenta con este correo.";
+      return "There is no account with this email.";
     case "auth/wrong-password":
-      return "La contraseña es incorrecta.";
+      return "The password is incorrect.";
     case "auth/email-already-in-use":
-      return "Este correo ya está registrado.";
+      return "This email is already registered.";
     case "auth/weak-password":
-      return "La contraseña debe tener al menos 6 caracteres.";
+      return "The password must be at least 6 characters.";
     default:
-      return "Error de autenticación. No esta registrado o introdujo un dato incorrecto";
+      return "Authentication error. Not registered or entered incorrect data";
   }
 }
 
