@@ -27,51 +27,73 @@ function HomePageContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const { data, loading, error, refetch } = useQuery(GET_TASKS, {
+  const { data, loading, error: queryError, refetch } = useQuery(GET_TASKS, {
     skip: !isAuthenticated,
+    onError: (error) => {
+      console.error("GraphQL error:", error);
+      setError("Error loading tasks. Please try again.");
+    },
   });
 
   const [deleteTask] = useMutation(DELETE_TASK, {
     refetchQueries: [{ query: GET_TASKS }],
+    onError: (error) => {
+      console.error("Delete error:", error);
+      setError("Error deleting task. Please try again.");
+    },
   });
 
   const [toggleTaskCompletion] = useMutation(TOGGLE_TASK_COMPLETION, {
     refetchQueries: [{ query: GET_TASKS }],
+    onError: (error) => {
+      console.error("Toggle error:", error);
+      setError("Error updating task. Please try again.");
+    },
   });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
+      if (user) {
+        setError(null);
+      }
     });
 
     return () => unsubscribe();
   }, []);
+
   const client = useApolloClient();
   const handleSignOut = async () => {
     try {
       await signOut(auth);
       setIsAuthenticated(false);
       await client.resetStore();
+      setError(null);
     } catch (error) {
       console.error("Error signing out:", error);
+      setError("Error signing out. Please try again.");
     }
-    window.location.reload();
   };
 
   const handleDeleteTask = async (taskId: string) => {
     try {
       await deleteTask({ variables: { id: taskId } });
+      setError(null);
     } catch (error) {
       console.error("Error deleting task:", error);
+      setError("Error deleting task. Please try again.");
     }
   };
 
   const handleMarkAsDone = async (taskId: string) => {
     try {
       await toggleTaskCompletion({ variables: { id: taskId } });
+      setError(null);
     } catch (error) {
       console.error("Error marking task as done:", error);
+      setError("Error updating task. Please try again.");
     }
   };
 
@@ -84,6 +106,7 @@ function HomePageContent() {
     setShowTaskForm(false);
     setSelectedTask(null);
     refetch();
+    setError(null);
   };
 
   const isMobile = useMediaQuery("(max-width:425px)");
@@ -136,9 +159,13 @@ function HomePageContent() {
           </Stack>
         </Box>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            Error loading tasks: {error.message}
+        {(error || queryError) && (
+          <Alert 
+            severity="error" 
+            sx={{ mb: 2 }}
+            onClose={() => setError(null)}
+          >
+            {error || queryError?.message || "An error occurred. Please try again."}
           </Alert>
         )}
 

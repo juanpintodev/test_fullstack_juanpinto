@@ -31,6 +31,15 @@ app.get("/health", (req, res) => {
     status: "OK",
     message: "Task List API is running",
     timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development",
+  });
+});
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "Task List API",
+    version: "1.0.0",
+    status: "running",
   });
 });
 
