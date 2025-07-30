@@ -15,7 +15,7 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { GET_TASKS } from "@/graphql/queries";
-import { DELETE_TASK, MARK_TASK_AS_DONE } from "@/graphql/mutations";
+import { DELETE_TASK, TOGGLE_TASK_COMPLETION } from "@/graphql/mutations";
 import TaskList from "@/components/TaskList";
 import TaskForm from "@/components/TaskForm";
 import AuthComponent from "@/components/AuthComponent";
@@ -35,7 +35,7 @@ export default function HomePage() {
     refetchQueries: [{ query: GET_TASKS }],
   });
 
-  const [markTaskAsDone] = useMutation(MARK_TASK_AS_DONE, {
+  const [toggleTaskCompletion] = useMutation(TOGGLE_TASK_COMPLETION, {
     refetchQueries: [{ query: GET_TASKS }],
   });
 
@@ -68,7 +68,7 @@ export default function HomePage() {
 
   const handleMarkAsDone = async (taskId: string) => {
     try {
-      await markTaskAsDone({ variables: { id: taskId } });
+      await toggleTaskCompletion({ variables: { id: taskId } });
     } catch (error) {
       console.error("Error marking task as done:", error);
     }

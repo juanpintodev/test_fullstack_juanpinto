@@ -22,6 +22,8 @@ import {
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Task } from "@/types/task";
+import { useState } from "react";
+import SearchIcon from "@mui/icons-material/Search";
 
 interface TaskListProps {
   tasks: Task[];
@@ -54,6 +56,20 @@ export default function TaskList({
 }: TaskListProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width:425px)");
+
+  // Estados para filtros
+  const [priorityFilter, setPriorityFilter] = useState<string>("");
+  const [dateFilter, setDateFilter] = useState<string>("");
+
+  // Filtrado de tareas
+  const filteredTasks = tasks.filter((task) => {
+    const matchesPriority = !priorityFilter || task.priority === priorityFilter;
+    const matchesDate =
+      !dateFilter ||
+      (task.dueDate &&
+        new Date(task.dueDate).toISOString().slice(0, 10) === dateFilter);
+    return matchesPriority && matchesDate;
+  });
   // Show message if no tasks
   if (tasks.length === 0) {
     return (
@@ -75,148 +91,204 @@ export default function TaskList({
 
   return (
     <Box sx={{ width: isMobile ? "100%" : 600, mx: "auto" }}>
+      {/* Filtros */}
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          mb: 2,
+          flexDirection: isMobile ? "column" : "row",
+        }}
+      >
+        {/* Filtro por prioridad */}
+        <select
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+          style={{
+            padding: "8px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+            minWidth: 120,
+          }}
+        >
+          <option value="">All priorities</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        {/* Filtro por fecha */}
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          style={{
+            padding: "8px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+            minWidth: 160,
+          }}
+        />
+        <SearchIcon color="action" sx={{ fontSize: 28 }} />
+      </Box>
       <List>
-        {tasks.map((task: Task) => (
-          <Paper key={task.id} elevation={1} sx={{ mb: 2, width: "100%" }}>
-            <ListItem
-              sx={{
-                textDecoration: task.completed ? "line-through" : "none",
-                opacity: task.completed ? 0.7 : 1,
-                flexDirection: isMobile ? "column" : "row",
-                alignItems: isMobile ? "flex-start" : "center",
-              }}
-            >
-              {/* Checkbox to mark task as done */}
-              <Checkbox
-                checked={task.completed}
-                onChange={() => onMarkAsDone(task.id)}
-                color="primary"
-              />
+        {filteredTasks.length === 0 ? (
+          <Paper
+            elevation={1}
+            sx={{
+              p: isMobile ? 2 : 4,
+              textAlign: "center",
+              width: isMobile ? "100vw" : 400,
+              mx: "auto",
+            }}
+          >
+            <Typography variant="h6" color="text.secondary">
+              No tasks match your filters.
+            </Typography>
+          </Paper>
+        ) : (
+          filteredTasks.map((task: Task) => (
+            <Paper key={task.id} elevation={1} sx={{ mb: 2, width: "100%" }}>
+              <ListItem
+                sx={{
+                  textDecoration: task.completed ? "line-through" : "none",
+                  opacity: task.completed ? 0.7 : 1,
+                  flexDirection: isMobile ? "column" : "row",
+                  alignItems: isMobile ? "flex-start" : "center",
+                }}
+              >
+                {/* Checkbox to mark task as done */}
+                <Checkbox
+                  checked={task.completed}
+                  onChange={() => onMarkAsDone(task.id)}
+                  color="primary"
+                />
 
-              {/* Task information */}
-              <ListItemText
-                primary={
-                  <Box
-                    component="span"
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                  >
-                    <Typography
-                      variant="h6"
-                      component="span"
-                      sx={{
-                        textDecoration: task.completed
-                          ? "line-through"
-                          : "none",
-                      }}
-                    >
-                      {task.title}
-                    </Typography>
-                    {/* Priority badge */}
-                    <Chip
-                      label={task.priority}
-                      size="small"
-                      color={getPriorityColor(task.priority) as any}
-                    />
-                  </Box>
-                }
-                secondary={
-                  <Box component="span">
-                    {/* Task description */}
-                    {task.description && (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 1 }}
-                        component="span"
-                      >
-                        {task.description}
-                      </Typography>
-                    )}
-
-                    {/* Task metadata */}
+                {/* Task information */}
+                <ListItemText
+                  primary={
                     <Box
                       component="span"
-                      sx={{
-                        display: "flex",
-                        gap: 2,
-                        alignItems: "center",
-                        flexWrap: isMobile ? "wrap" : "nowrap",
-                      }}
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
                     >
-                      {/* Creation date */}
-                      <Typography variant="caption" color="text.secondary">
-                        Created:{" "}
-                        {format(new Date(task.createdAt), "MMM dd, yyyy")}
+                      <Typography
+                        variant="h6"
+                        component="span"
+                        sx={{
+                          textDecoration: task.completed
+                            ? "line-through"
+                            : "none",
+                        }}
+                      >
+                        {task.title}
                       </Typography>
-
-                      {/* Due date (if exists) */}
-                      {task.dueDate && (
-                        <Typography variant="caption" color="text.secondary">
-                          Due: {format(new Date(task.dueDate), "MMM dd, yyyy")}
+                      {/* Priority badge */}
+                      <Chip
+                        label={task.priority}
+                        size="small"
+                        color={getPriorityColor(task.priority) as any}
+                      />
+                    </Box>
+                  }
+                  secondary={
+                    <Box component="span">
+                      {/* Task description */}
+                      {task.description && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 1 }}
+                          component="span"
+                        >
+                          {task.description}
                         </Typography>
                       )}
 
-                      {/* Completion status */}
-                      {task.completed && (
-                        <Box
-                          component="span"
-                          sx={{
-                            width: isMobile ? "100%" : 400,
-                            maxWidth: isMobile ? "100%" : 400,
-                            ml: isMobile ? 0 : "auto",
-                            mr: isMobile ? 0 : "auto",
-                            px: isMobile ? 0 : 2,
-                            py: 3,
-                            borderRadius: isMobile ? 0 : 2,
-                            boxSizing: "border-box",
-                          }}
-                        >
-                          <CheckCircleIcon fontSize="small" color="success" />
-                          <Typography variant="caption" color="success.main">
-                            Completed
-                          </Typography>
-                        </Box>
-                      )}
-                    </Box>
-                  </Box>
-                }
-              />
+                      {/* Task metadata */}
+                      <Box
+                        component="span"
+                        sx={{
+                          display: "flex",
+                          gap: 2,
+                          alignItems: "center",
+                          flexWrap: isMobile ? "wrap" : "nowrap",
+                        }}
+                      >
+                        {/* Creation date */}
+                        <Typography variant="caption" color="text.secondary">
+                          Created:{" "}
+                          {format(new Date(task.createdAt), "MMM dd, yyyy")}
+                        </Typography>
 
-              {/* Action buttons (ahora dentro del ListItem, no ListItemSecondaryAction) */}
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: 1,
-                  mt: isMobile ? 2 : 0,
-                  alignSelf: isMobile ? "stretch" : "center",
-                  justifyContent: isMobile ? "flex-end" : "flex-end",
-                  width: isMobile ? "100%" : "auto",
-                }}
-              >
-                {/* Edit button */}
-                <Tooltip title="Edit Task">
-                  <IconButton
-                    edge="end"
-                    onClick={() => onEdit(task)}
-                    disabled={task.completed}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-                {/* Delete button */}
-                <Tooltip title="Delete Task">
-                  <IconButton
-                    edge="end"
-                    onClick={() => onDelete(task.id)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </ListItem>
-          </Paper>
-        ))}
+                        {/* Due date (if exists) */}
+                        {task.dueDate && (
+                          <Typography variant="caption" color="text.secondary">
+                            Due:{" "}
+                            {format(new Date(task.dueDate), "MMM dd, yyyy")}
+                          </Typography>
+                        )}
+
+                        {/* Completion status */}
+                        {task.completed && (
+                          <Box
+                            component="span"
+                            sx={{
+                              width: isMobile ? "100%" : 400,
+                              maxWidth: isMobile ? "100%" : 400,
+                              ml: isMobile ? 0 : "auto",
+                              mr: isMobile ? 0 : "auto",
+                              px: isMobile ? 0 : 2,
+                              py: 3,
+                              borderRadius: isMobile ? 0 : 2,
+                              boxSizing: "border-box",
+                            }}
+                          >
+                            <CheckCircleIcon fontSize="small" color="success" />
+                            <Typography variant="caption" color="success.main">
+                              Completed
+                            </Typography>
+                          </Box>
+                        )}
+                      </Box>
+                    </Box>
+                  }
+                />
+
+                {/* Action buttons (ahora dentro del ListItem, no ListItemSecondaryAction) */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    mt: isMobile ? 2 : 0,
+                    alignSelf: isMobile ? "stretch" : "center",
+                    justifyContent: isMobile ? "flex-end" : "flex-end",
+                    width: isMobile ? "100%" : "auto",
+                  }}
+                >
+                  {/* Edit button */}
+                  <Tooltip title="Edit Task">
+                    <IconButton
+                      edge="end"
+                      onClick={() => onEdit(task)}
+                      disabled={task.completed}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+                  {/* Delete button */}
+                  <Tooltip title="Delete Task">
+                    <IconButton
+                      edge="end"
+                      onClick={() => onDelete(task.id)}
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </ListItem>
+            </Paper>
+          ))
+        )}
       </List>
     </Box>
   );
