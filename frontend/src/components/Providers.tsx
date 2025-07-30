@@ -4,7 +4,6 @@ import { ApolloProvider } from "@apollo/client";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { client } from "@/lib/apollo-client";
-import Box from "@mui/material/Box";
 
 const theme = createTheme({
   palette: {
@@ -39,19 +38,7 @@ export default function Providers({
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box
-          sx={{
-            width: "100vw",
-            maxWidth: "100vw",
-            overflowX: "hidden",
-            margin: 0,
-            padding: 0,
-            minHeight: "100vh",
-            backgroundColor: "#fff",
-          }}
-        >
-          {children}
-        </Box>
+        {children}
       </ThemeProvider>
     </ApolloProvider>
   );
