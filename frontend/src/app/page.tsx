@@ -20,9 +20,10 @@ import TaskList from "@/components/TaskList";
 import TaskForm from "@/components/TaskForm";
 import AuthComponent from "@/components/AuthComponent";
 import { Task } from "@/types/task";
+import Providers from "@/components/Providers";
 
 // Main page of the app: handles authentication and displays the user's tasks
-export default function HomePage() {
+function HomePageContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -161,5 +162,13 @@ export default function HomePage() {
         />
       </Box>
     </Container>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Providers>
+      <HomePageContent />
+    </Providers>
   );
 }
