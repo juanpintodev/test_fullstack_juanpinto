@@ -1,10 +1,3 @@
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Task List App',
-  description: 'Task List Application with Authentication',
-}
-
 export default function RootLayout({
   children,
 }: {
@@ -12,6 +5,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>Task List App</title>
+        <meta name="description" content="Task List Application with Authentication" />
+      </head>
       <body>
         {children}
       </body>

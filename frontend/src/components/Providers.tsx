@@ -38,7 +38,17 @@ export default function Providers({
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {children}
+        <div style={{ 
+          width: "100vw", 
+          maxWidth: "100vw", 
+          overflowX: "hidden", 
+          margin: 0, 
+          padding: 0, 
+          minHeight: "100vh", 
+          backgroundColor: "#fff" 
+        }}>
+          {children}
+        </div>
       </ThemeProvider>
     </ApolloProvider>
   );
