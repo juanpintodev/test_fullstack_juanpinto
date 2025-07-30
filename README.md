@@ -92,3 +92,17 @@ git commit -m "Initial commit"
 git remote add origin https://github.com/username/repo.git
 git push -u origin main
 ```
+
+## Deploy to Render
+
+This application is configured for deployment on Render. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
+### Quick Setup:
+1. Connect your GitHub repository to Render
+2. Use the `render.yaml` file for automatic service configuration
+3. Set up environment variables as described in `DEPLOYMENT.md`
+4. Deploy both backend and frontend services
+
+The application will be available at:
+- Backend: `https://task-list-backend.onrender.com`
+- Frontend: `https://task-list-frontend.onrender.com`

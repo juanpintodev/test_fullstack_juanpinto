@@ -34,15 +34,14 @@ interface TaskListProps {
 
 // Component that displays the authenticated user's task list
 
-// Helper function to get color for priority
 const getPriorityColor = (priority: string) => {
   switch (priority) {
     case "high":
-      return "error"; // Red for high priority
+      return "error";
     case "medium":
-      return "warning"; // Orange for medium priority
+      return "warning";
     case "low":
-      return "success"; // Green for low priority
+      return "success";
     default:
       return "default";
   }
@@ -57,11 +56,9 @@ export default function TaskList({
   const theme = useTheme();
   const isMobile = useMediaQuery("(max-width:425px)");
 
-  // Estados para filtros
   const [priorityFilter, setPriorityFilter] = useState<string>("");
   const [dateFilter, setDateFilter] = useState<string>("");
 
-  // Filtrado de tareas
   const filteredTasks = tasks.filter((task) => {
     const matchesPriority = !priorityFilter || task.priority === priorityFilter;
     const matchesDate =
@@ -91,7 +88,7 @@ export default function TaskList({
 
   return (
     <Box sx={{ width: isMobile ? "100%" : 600, mx: "auto" }}>
-      {/* Filtros */}
+      {/* Filers */}
       <Box
         sx={{
           display: "flex",
@@ -100,7 +97,6 @@ export default function TaskList({
           flexDirection: isMobile ? "column" : "row",
         }}
       >
-        {/* Filtro por prioridad */}
         <select
           value={priorityFilter}
           onChange={(e) => setPriorityFilter(e.target.value)}
@@ -116,7 +112,7 @@ export default function TaskList({
           <option value="medium">Medium</option>
           <option value="low">Low</option>
         </select>
-        {/* Filtro por fecha */}
+        {/* Filter by date */}
         <input
           type="date"
           value={dateFilter}

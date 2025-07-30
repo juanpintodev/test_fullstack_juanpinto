@@ -4,7 +4,7 @@
   "description": "Backend API for Task List Application",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "ts-node-dev src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "jest"
