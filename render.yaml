@@ -6,8 +6,6 @@ services:
     buildCommand: cd backend && npm install && npm run build
     startCommand: cd backend && npm start
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: MONGODB_URI
         sync: false
       - key: FIREBASE_PROJECT_ID
@@ -36,8 +34,6 @@ services:
     buildCommand: cd frontend && npm install && npm run build
     startCommand: cd frontend && npm start
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: NEXT_PUBLIC_GRAPHQL_URL
         value: https://task-list-backend.onrender.com/graphql
       - key: NEXT_PUBLIC_FIREBASE_API_KEY

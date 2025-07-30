@@ -5,8 +5,18 @@ const nextConfig = {
     NEXT_PUBLIC_GRAPHQL_URL:
       process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:4000/graphql",
   },
-  experimental: {},
+  experimental: {
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
   trailingSlash: false,
+  swcMinify: true,
 };
 
 module.exports = nextConfig;

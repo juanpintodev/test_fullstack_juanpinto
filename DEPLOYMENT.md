@@ -16,7 +16,6 @@ This application consists of two services that need to be deployed on Render:
 Set these in your Render backend service:
 
 ```
-NODE_ENV=production
 PORT=4000
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/tasklist?retryWrites=true&w=majority
 
@@ -36,7 +35,6 @@ FIREBASE_CLIENT_X509_CERT_URL=https://www.googleapis.com/robot/v1/metadata/x509/
 Set these in your Render frontend service:
 
 ```
-NODE_ENV=production
 NEXT_PUBLIC_GRAPHQL_URL=https://task-list-backend.onrender.com/graphql
 NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
