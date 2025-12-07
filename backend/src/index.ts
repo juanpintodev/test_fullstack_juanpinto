@@ -17,32 +17,15 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? [
-        "https://task-list-frontend.onrender.com",
-        "https://task-list-app.onrender.com",
-      ]
-    : ["http://localhost:3000", "http://127.0.0.1:3000"];
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === "production" 
+      ? ["https://task-list-frontend.onrender.com", "https://task-list-app.onrender.com"]
+      : "http://localhost:3000",
+    credentials: true,
+  })
+);
 
-const corsOptions = {
-  origin: (
-    origin: string | undefined,
-    callback: (err: Error | null, allow?: boolean) => void
-  ) => {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg =
-        "The CORS policy for this site does not allow access from the specified Origin.";
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
 app.use(express.json());
 app.use(authMiddleware);
 
@@ -80,11 +63,7 @@ async function startServer() {
 
     await server.start();
 
-    // Apply Apollo middleware
-    server.applyMiddleware({
-      app: app as any,
-      path: "/graphql",
-    });
+    server.applyMiddleware({ app: app as any, path: "/graphql", cors: false });
 
     app.listen(PORT, () => {
       console.log("Server is running!");
