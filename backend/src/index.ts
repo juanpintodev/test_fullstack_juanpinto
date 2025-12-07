@@ -79,7 +79,49 @@ async function startServer() {
 
     await server.start();
 
-    server.applyMiddleware({ app: app as any, path: "/graphql", cors: false });
+    // Use environment variable for CORS origin in production for flexibility
+    const allowedOrigins = [
+      "http://localhost:3000",
+      "https://task-list-frontend-vr8s.onrender.com",
+    ];
+    if (process.env.CORS_ORIGIN) {
+      allowedOrigins.push(process.env.CORS_ORIGIN);
+    }
+
+    const corsOptions = {
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true,
+    };
+
+    app.use(cors(corsOptions));
+    app.use(express.json());
+    app.use(authMiddleware);
+
+    // Apply Apollo middleware with CORS options
+    server.applyMiddleware({ app: app as any, path: "/graphql", cors: corsOptions });
+
+    app.get("/health", (req, res) => {
+      res.json({
+        status: "OK",
+        message: "Task List API is running",
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || "development",
+      });
+    });
+
+    app.get("/", (req, res) => {
+      res.json({
+        message: "Task List API",
+        version: "1.0.0",
+        status: "running",
+      });
+    });
 
     app.listen(PORT, () => {
       console.log("Server is running!");
