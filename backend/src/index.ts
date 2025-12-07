@@ -17,14 +17,30 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(
-  cors({
-    origin: process.env.NODE_ENV === "production" 
-      ? ["https://task-list-frontend.onrender.com", "https://task-list-app.onrender.com"]
-      : "http://localhost:3000",
-    credentials: true,
-  })
-);
+// CORS configuration
+const allowedOrigins = process.env.NODE_ENV === "production"
+  ? [
+      "https://task-list-frontend-vr8s.onrender.com",
+      "http://localhost:3000",
+    ]
+  : ["http://localhost:3000"];
+
+const corsOptions: cors.CorsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser requests
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+// Explicitly handle preflight for GraphQL
+app.options("/graphql", cors(corsOptions));
 
 app.use(express.json());
 app.use(authMiddleware);
