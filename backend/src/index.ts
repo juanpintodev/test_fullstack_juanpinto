@@ -82,11 +82,10 @@ async function startServer() {
 
     await server.start();
 
-    // Apply Apollo middleware with CORS options
+    // Apply Apollo middleware
     server.applyMiddleware({
       app: app as any,
       path: "/graphql",
-      cors: corsOptions,
     });
 
     app.listen(PORT, () => {
