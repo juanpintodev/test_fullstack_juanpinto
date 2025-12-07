@@ -9,7 +9,7 @@ const userPoolId =
 const region = userPoolId.split("_")[0];
 
 export const cognitoConfig = {
-  authority: `${cognitoDomain}`,
+  authority: `https://${cognitoDomain}`.replace(/([^:]\/)\/+/g, "$1"),
   client_id: clientId,
   redirect_uri: typeof window !== "undefined" ? window.location.origin : "",
   post_logout_redirect_uri:
