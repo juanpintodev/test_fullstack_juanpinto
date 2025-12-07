@@ -1,107 +1,97 @@
 "use client";
 
-import { useState } from "react";
+import { useAuth } from "react-oidc-context";
 import {
-  Box,
   Paper,
-  TextField,
   Button,
   Typography,
   Alert,
   Stack,
   useMediaQuery,
-  useTheme,
+  CircularProgress,
+  Box,
 } from "@mui/material";
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
-import { auth } from "@/lib/firebase";
 
 interface AuthComponentProps {
   onAuthSuccess: () => void;
 }
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`auth-tabpanel-${index}`}
-      aria-labelledby={`auth-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-// Función para traducir y personalizar los mensajes de error de Firebase
-function getFirebaseAuthErrorMessage(error: any) {
-  if (!error || !error.code) return "Ocurrió un error desconocido.";
-  switch (error.code) {
-    case "auth/invalid-email":
-      return "Invalid email.";
-    case "auth/user-not-found":
-      return "There is no account with this email.";
-    case "auth/wrong-password":
-      return "The password is incorrect.";
-    case "auth/email-already-in-use":
-      return "This email is already registered.";
-    case "auth/weak-password":
-      return "The password must be at least 6 characters.";
-    default:
-      return "Authentication error. Not registered or entered incorrect data";
-  }
-}
-
 export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<any>("");
-  const [loading, setLoading] = useState(false);
-  const theme = useTheme();
+  const auth = useAuth();
   const isMobile = useMediaQuery("(max-width:425px)");
   const isVerySmall = useMediaQuery("(max-width:375px)");
-  const [showPasswordAlert, setShowPasswordAlert] = useState(false);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      onAuthSuccess();
-    } catch (error: any) {
-      setError(error); // Guarda el error completo para traducirlo
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (auth.isLoading) {
+    return (
+      <Paper
+        elevation={isMobile ? 0 : 3}
+        sx={{
+          width: isMobile ? "100%" : 400,
+          maxWidth: isMobile ? "100%" : 400,
+          ml: isMobile ? 0 : "auto",
+          mr: isMobile ? 0 : "auto",
+          px: isMobile ? 2 : 2,
+          py: 3,
+          borderRadius: isMobile ? 0 : 2,
+          boxSizing: "border-box",
+          textAlign: "center",
+        }}
+      >
+        <CircularProgress />
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          Loading...
+        </Typography>
+      </Paper>
+    );
+  }
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setShowPasswordAlert(true); // Muestra el alert solo al crear la cuenta
-      localStorage.setItem("hasLoggedIn", "true");
+  if (auth.error) {
+    return (
+      <Paper
+        elevation={isMobile ? 0 : 3}
+        sx={{
+          width: isMobile ? "100%" : 400,
+          maxWidth: isMobile ? "100%" : 400,
+          ml: isMobile ? 0 : "auto",
+          mr: isMobile ? 0 : "auto",
+          px: isMobile ? 2 : 2,
+          py: 3,
+          borderRadius: isMobile ? 0 : 2,
+          boxSizing: "border-box",
+        }}
+      >
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Authentication error: {auth.error.message}
+        </Alert>
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          onClick={() => auth.signinRedirect({
+            extraQueryParams: {
+              prompt: "login",
+            },
+          })}
+        >
+          Try Again
+        </Button>
+      </Paper>
+    );
+  }
+
+  if (auth.isAuthenticated) {
+    if (onAuthSuccess) {
       onAuthSuccess();
-    } catch (error: any) {
-      setError(error); // Guarda el error completo para traducirlo
-    } finally {
-      setLoading(false);
     }
+    return null;
+  }
+
+  const handleSignIn = () => {
+    auth.signinRedirect({
+      extraQueryParams: {
+        prompt: "login",
+      },
+    });
   };
 
   return (
@@ -121,72 +111,20 @@ export default function AuthComponent({ onAuthSuccess }: AuthComponentProps) {
       <Typography variant="h5" align="center" mb={2}>
         Welcome
       </Typography>
-      <form>
-        <TextField
+      <Typography variant="body2" align="center" color="text.secondary" mb={3}>
+        Sign in to manage your tasks
+      </Typography>
+      <Stack spacing={2}>
+        <Button
           fullWidth
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          margin="normal"
-          required
-        />
-        <TextField
-          fullWidth
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          margin="normal"
-          required
-          helperText="Password must be at least 6 characters"
-        />
-        {error && (
-          <Alert
-            severity="error"
-            sx={{
-              mt: 2,
-              fontWeight: "bold",
-              color: "#fff",
-              background: "linear-gradient(90deg, #d32f2f 60%, #ff7961 100%)",
-              borderRadius: 2,
-              boxShadow: 2,
-              fontSize: "1rem",
-              letterSpacing: "0.5px",
-            }}
-            icon={false}
-          >
-            {getFirebaseAuthErrorMessage(error)}
-          </Alert>
-        )}
-        {showPasswordAlert && (
-          <Alert severity="info" sx={{ mt: 2 }}>
-            Por seguridad, te recomendamos cambiar tu contraseña.
-          </Alert>
-        )}
-        <Stack direction={isVerySmall ? "column" : "row"} spacing={2} mt={3}>
-          <Button
-            type="button"
-            fullWidth={isMobile}
-            variant="contained"
-            color="primary"
-            disabled={loading}
-            onClick={handleSignIn}
-          >
-            {loading ? "Signing In..." : "Sign In"}
-          </Button>
-          <Button
-            type="button"
-            fullWidth={isMobile}
-            variant="outlined"
-            color="primary"
-            disabled={loading}
-            onClick={handleSignUp}
-          >
-            {loading ? "Creating Account..." : "Sign Up"}
-          </Button>
-        </Stack>
-      </form>
+          variant="contained"
+          color="primary"
+          onClick={handleSignIn}
+          size="large"
+        >
+          Sign In / Sign Up
+        </Button>
+      </Stack>
     </Paper>
   );
 }

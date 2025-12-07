@@ -1,15 +1,18 @@
 // Main entry point for the backend: sets up Express, Apollo Server, and MongoDB connection
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { ApolloServer } from "apollo-server-express";
+import dotenv from "dotenv";
+import path from "path";
 
 import { connectDB } from "./config/database";
 import { typeDefs } from "./graphql/schema";
 import { resolvers } from "./graphql/resolvers";
 import { authMiddleware } from "./middleware/auth";
 
-dotenv.config();
+// Load environment variables - try backend/.env first, then root .env
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -59,7 +62,8 @@ async function startServer() {
     });
 
     await server.start();
-    server.applyMiddleware({ app: app as any, path: "/graphql" });
+
+    server.applyMiddleware({ app: app as any, path: "/graphql", cors: false });
 
     app.listen(PORT, () => {
       console.log("Server is running!");

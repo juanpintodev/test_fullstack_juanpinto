@@ -1,44 +1,27 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  from,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { AuthContextProps } from "react-oidc-context";
 
 const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:4000/graphql",
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL,
 });
 
-const authLink = setContext(async (_, { headers }) => {
-  // Solo ejecutar en el cliente
-  if (typeof window !== "undefined") {
-    try {
-      const { auth } = await import("./firebase");
-      const user = auth.currentUser;
-      if (user) {
-        const token = await user.getIdToken();
-        return {
-          headers: {
-            ...headers,
-            authorization: token ? `Bearer ${token}` : "",
-          },
-        };
-      }
-    } catch (error) {
-      console.error("Error getting Firebase token:", error);
-    }
-  }
+export const createApolloClient = (auth: AuthContextProps) => {
+  const authLink = setContext((_, { headers }) => {
+    // Get the authentication token from the OIDC context
+    const token = auth.user?.access_token;
 
-  return {
-    headers: {
-      ...headers,
-    },
-  };
-});
+    // Return the headers to the context so httpLink can read them
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      },
+    };
+  });
 
-export const client = new ApolloClient({
-  link: from([authLink, httpLink]),
-  cache: new InMemoryCache(),
-  ssrMode: typeof window === "undefined",
-});
+  return new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+  });
+};

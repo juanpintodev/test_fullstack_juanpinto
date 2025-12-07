@@ -135,7 +135,7 @@ export default function TaskForm({ open, onClose, task }: TaskFormProps) {
           maxWidth: isMobile ? "100%" : 600,
           ml: isMobile ? 0 : 0,
           mr: isMobile ? 0 : 0,
-          px: isMobile ? 2 : 2, // padding horizontal en móvil y desktop
+          px: isMobile ? 2 : 2, // Horizontal padding on mobile and desktop
           py: 3,
           borderRadius: isMobile ? 0 : 2,
           boxSizing: "border-box",

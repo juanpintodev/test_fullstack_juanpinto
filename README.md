@@ -1,11 +1,5 @@
 # How to run
 
-########## NOTE ##########
-I couldn't perform the Auth with (AWS) because AWS has
-an approval period for the free tier profile of 3 to 5
-days and that is outside the time limit that you set for
-me to deliver the test, that's why I used FIREBASE
-##########################
 
 # 1. Install dependencies
 

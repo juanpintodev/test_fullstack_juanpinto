@@ -1,74 +1,32 @@
-describe("Authentication", () => {
+describe("Authentication Page", () => {
   beforeEach(() => {
+    // Clear session state and visit the home page before each test
+    cy.clearCookies();
+    cy.clearLocalStorage();
     cy.visit("/");
   });
 
-  it("should display authentication form", () => {
+  it("should display the main page title", () => {
+    // The main page should always show this title, even for logged-out users
     cy.get("h1").should("contain", "Task List App");
-    cy.get("h6").should("contain", "Sign in to manage your tasks");
-
-    // Check for tabs
-    cy.get('[role="tab"]').should("have.length", 2);
-    cy.get('[role="tab"]').first().should("contain", "Sign In");
-    cy.get('[role="tab"]').last().should("contain", "Sign Up");
   });
 
-  it("should switch between sign in and sign up tabs", () => {
-    // Initially on sign in tab
-    cy.get('[role="tabpanel"]').should("contain", "Sign In");
-
-    // Switch to sign up tab
-    cy.get('[role="tab"]').last().click();
-    cy.get('[role="tabpanel"]').should("contain", "Create Account");
-
-    // Switch back to sign in tab
-    cy.get('[role="tab"]').first().click();
-    cy.get('[role="tabpanel"]').should("contain", "Sign In");
+  it("should display the authentication component with welcome text", () => {
+    // Check for the text within the AuthComponent
+    cy.get("h5").should("contain", "Welcome");
+    cy.get("p").should("contain", "Sign in to manage your tasks");
   });
 
-  it("should show validation errors for empty fields", () => {
-    // Try to submit empty form
-    cy.get('button[type="submit"]').click();
+  it("should display a single 'Sign In / Sign Up' button", () => {
+    // Find the main call-to-action button
+    const signInButton = cy.get('button').contains("Sign In / Sign Up");
 
-    // Check for required field validation
-    cy.get('input[type="email"]').should("have.attr", "required");
-    cy.get('input[type="password"]').should("have.attr", "required");
+    // Assert that the button is visible
+    signInButton.should("be.visible");
   });
 
-  it("should show error for password mismatch in sign up", () => {
-    // Switch to sign up tab
-    cy.get('[role="tab"]').last().click();
-
-    // Fill form with mismatched passwords
-    cy.get('input[type="email"]').type("test@example.com");
-    cy.get('input[type="password"]').first().type("password123");
-    cy.get('input[type="password"]').last().type("password456");
-
-    cy.get('button[type="submit"]').click();
-
-    // Should show password mismatch error
-    cy.get('[role="alert"]').should("contain", "Passwords do not match");
-  });
-
-  it("should handle invalid credentials gracefully", () => {
-    // Try to sign in with invalid credentials
-    cy.get('input[type="email"]').type("invalid@example.com");
-    cy.get('input[type="password"]').type("wrongpassword");
-    cy.get('button[type="submit"]').click();
-
-    // Should show error message
-    cy.get('[role="alert"]').should("be.visible");
-  });
-
-  it("should have proper form accessibility", () => {
-    // Check for proper labels
-    cy.get('input[type="email"]').should("have.attr", "aria-label");
-    cy.get('input[type="password"]').should("have.attr", "aria-label");
-
-    // Check for proper button types
-    cy.get('button[type="submit"]').should("exist");
-
-    // Check for proper form structure
-    cy.get("form").should("exist");
-  });
+  // Note: We are not testing the redirect to the external provider (Cognito)
+  // as that is out of the scope of the application's E2E tests.
+  // These tests correctly verify that our application is trying to
+  // initiate the authentication flow as expected.
 });

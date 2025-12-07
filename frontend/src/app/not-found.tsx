@@ -11,8 +11,8 @@ export default function NotFound() {
       textAlign: 'center',
       padding: '20px'
     }}>
-      <h1>404 - Página no encontrada</h1>
-      <p>Lo sentimos, la página que buscas no existe.</p>
+      <h1>404 - Page not found</h1>
+      <p>Sorry, the page you are looking for does not exist.</p>
       <Link href="/" style={{
         marginTop: '20px',
         padding: '10px 20px',
@@ -21,7 +21,7 @@ export default function NotFound() {
         textDecoration: 'none',
         borderRadius: '4px'
       }}>
-        Volver al inicio
+        Go back to the home page
       </Link>
     </div>
   )

@@ -17,8 +17,8 @@ export default function Error({
       textAlign: 'center',
       padding: '20px'
     }}>
-      <h1>Algo salió mal</h1>
-      <p>Ha ocurrido un error inesperado.</p>
+      <h1>Something went wrong</h1>
+      <p>An unexpected error occurred.</p>
       <button
         onClick={reset}
         style={{
@@ -31,7 +31,7 @@ export default function Error({
           cursor: 'pointer'
         }}
       >
-        Intentar de nuevo
+        Try again
       </button>
     </div>
   )

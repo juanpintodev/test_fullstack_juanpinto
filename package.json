@@ -21,9 +21,12 @@
     "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "ts-node-dev": "^2.0.0"
   },
   "dependencies": {
-    "cypress": "^14.5.2"
+    "cypress": "^14.5.2",
+    "oidc-client-ts": "^3.4.1",
+    "react-oidc-context": "^3.3.0"
   }
 }

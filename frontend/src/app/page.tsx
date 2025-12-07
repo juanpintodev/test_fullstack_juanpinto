@@ -12,8 +12,8 @@ import {
   Stack,
   useMediaQuery,
 } from "@mui/material";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { useAuth } from "react-oidc-context";
+import { cognitoDomain, cognitoConfig } from "@/lib/cognito-config";
 import { GET_TASKS } from "@/graphql/queries";
 import { DELETE_TASK, TOGGLE_TASK_COMPLETION } from "@/graphql/mutations";
 import TaskList from "@/components/TaskList";
@@ -24,13 +24,15 @@ import Providers from "@/components/Providers";
 
 // Main page of the app: handles authentication and displays the user's tasks
 function HomePageContent() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const auth = useAuth();
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  const isAuthenticated = auth.isAuthenticated;
 
   const { data, loading, error: queryError, refetch } = useQuery(GET_TASKS, {
-    skip: !isAuthenticated,
+    skip: !isAuthenticated || auth.isLoading,
     onError: (error) => {
       console.error("GraphQL error:", error);
       setError("Error loading tasks. Please try again.");
@@ -54,26 +56,41 @@ function HomePageContent() {
   });
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsAuthenticated(!!user);
-      if (user) {
-        setError(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+    if (auth.isAuthenticated) {
+      setError(null);
+    }
+  }, [auth.isAuthenticated]);
 
   const client = useApolloClient();
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
-      setIsAuthenticated(false);
       await client.resetStore();
-      setError(null);
+      
+      // If we have the Cognito domain, use manual logout URL
+      if (cognitoDomain && typeof window !== "undefined") {
+        const logoutUri = window.location.origin;
+        const logoutUrl = `${cognitoDomain}/logout?client_id=${cognitoConfig.client_id}&logout_uri=${encodeURIComponent(logoutUri)}`;
+        await auth.removeUser();
+        window.location.href = logoutUrl;
+      } else {
+        // Fallback to signoutRedirect
+        try {
+          await auth.signoutRedirect();
+        } catch (signoutError) {
+          // If signoutRedirect fails, manually clear user and redirect
+          await auth.removeUser();
+          if (typeof window !== "undefined") {
+            window.location.href = "/";
+          }
+        }
+      }
     } catch (error) {
       console.error("Error signing out:", error);
-      setError("Error signing out. Please try again.");
+      // Fallback: clear user and reload
+      await auth.removeUser();
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
+      }
     }
   };
 
@@ -111,6 +128,41 @@ function HomePageContent() {
 
   const isMobile = useMediaQuery("(max-width:425px)");
 
+  if (auth.isLoading) {
+    return (
+      <Container maxWidth="sm">
+        <Box sx={{ mt: 8, textAlign: "center" }}>
+          <CircularProgress />
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Loading...
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (auth.error) {
+    return (
+      <Container maxWidth="sm">
+        <Box sx={{ mt: 8, textAlign: "center" }}>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Authentication error: {auth.error.message}
+          </Alert>
+          <Button 
+            variant="contained" 
+            onClick={() => auth.signinRedirect({
+              extraQueryParams: {
+                prompt: "login",
+              },
+            })}
+          >
+            Try Again
+          </Button>
+        </Box>
+      </Container>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <Container maxWidth="sm">
@@ -118,15 +170,7 @@ function HomePageContent() {
           <Typography variant="h3" component="h1" gutterBottom>
             Task List App
           </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            gutterBottom
-            component="span"
-          >
-            Sign in to manage your tasks
-          </Typography>
-          <AuthComponent onAuthSuccess={() => setIsAuthenticated(true)} />
+          <AuthComponent onAuthSuccess={() => {}} />
         </Box>
       </Container>
     );
