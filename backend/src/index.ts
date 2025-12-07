@@ -17,11 +17,12 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Use environment variable for CORS origin in production for flexibility
+const origin = process.env.CORS_ORIGIN || "http://localhost:3000";
+
 app.use(
   cors({
-    origin: process.env.NODE_ENV === "production" 
-      ? ["https://task-list-frontend.onrender.com", "https://task-list-app.onrender.com"]
-      : "http://localhost:3000",
+    origin: origin,
     credentials: true,
   })
 );
