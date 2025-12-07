@@ -17,31 +17,20 @@ Set these in your Render backend service:
 
 ```
 PORT=4000
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/tasklist?retryWrites=true&w=majority
-
-# Firebase Admin SDK
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY_ID=your-private-key-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour Private Key Here\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com
-FIREBASE_CLIENT_ID=your-client-id
-FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
-FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
-FIREBASE_AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
-FIREBASE_CLIENT_X509_CERT_URL=https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-xxxxx%40your-project.iam.gserviceaccount.com
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/tasklist
+AWS_REGION=your-region
+COGNITO_USER_POOL_ID=your-pool-id
+COGNITO_USER_POOL_CLIENT_ID=your-pool-client
 ```
 
 ### Frontend Environment Variables
 Set these in your Render frontend service:
 
 ```
-NEXT_PUBLIC_GRAPHQL_URL=https://task-list-backend.onrender.com/graphql
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql
+NEXT_PUBLIC_COGNITO_AUTHORITY=your-project
+NEXT_PUBLIC_COGNITO_CLIENT_ID=your-service-client-aws
+NEXT_PUBLIC_COGNITO_DOMAIN=your-domain-aws
 ```
 
 ## Deployment Steps
@@ -73,8 +62,8 @@ After deployment, update the `NEXT_PUBLIC_GRAPHQL_URL` in your frontend service 
 
 ## Important Notes
 
-- The backend service will be available at: `https://task-list-backend.onrender.com`
-- The frontend service will be available at: `https://task-list-frontend.onrender.com`
+- The backend service will be available at: `https://task-list-backend-hlj0.onrender.com`
+- The frontend service will be available at: `https://task-list-frontend-vr8s.onrender.com`
 - Make sure to update the CORS origins in the backend if your frontend URL changes
 - The `render.yaml` file is configured for automatic deployment
 

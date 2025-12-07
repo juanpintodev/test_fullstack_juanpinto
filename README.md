@@ -16,21 +16,19 @@ cd frontend && npm install
 ```
 PORT=4000
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/tasklist
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_CLIENT_EMAIL=your-service-account-email
-FIREBASE_PRIVATE_KEY=your-private-key
+AWS_REGION=your-region
+COGNITO_USER_POOL_ID=your-pool-id
+COGNITO_USER_POOL_CLIENT_ID=your-pool-client
 ```
 
 **Frontend (.env.local):**
 
 ```
 NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+NEXT_PUBLIC_COGNITO_AUTHORITY=your-project
+NEXT_PUBLIC_COGNITO_CLIENT_ID=your-service-client-aws
+NEXT_PUBLIC_COGNITO_DOMAIN=your-domain-aws
+
 ```
 
 ######## ELSE ###########
@@ -83,7 +81,7 @@ cd frontend && npm test
 git init
 git add .
 git commit -m "Initial commit"
-git remote add origin https://github.com/username/repo.git
+git remote add origin https://github.com/juanpintodev/test_fullstack_juanpinto.git
 git push -u origin main
 ```
 
@@ -98,5 +96,5 @@ This application is configured for deployment on Render. See [DEPLOYMENT.md](./D
 4. Deploy both backend and frontend services
 
 The application will be available at:
-- Backend: `https://task-list-backend.onrender.com`
-- Frontend: `https://task-list-frontend.onrender.com`
+- Backend: `https://task-list-frontend-vr8s.onrender.com`
+- Frontend: `https://task-list-backend-hlj0.onrender.com`
