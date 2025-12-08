@@ -7,7 +7,7 @@ This application consists of two services that need to be deployed on Render:
 
 ## Prerequisites
 - MongoDB database (MongoDB Atlas recommended)
-- Firebase project with Authentication enabled
+- Cognito project with Authentication enabled
 - Render account
 
 ## Environment Variables Setup
@@ -42,12 +42,40 @@ NEXT_PUBLIC_COGNITO_DOMAIN=your-domain-aws
 4. Get your connection string
 5. Add the connection string to your backend environment variables
 
-### 2. Set up Firebase
-1. Create a Firebase project
-2. Enable Authentication (Email/Password)
-3. Create a service account and download the JSON file
-4. Add the service account details to your backend environment variables
-5. Add the Firebase config to your frontend environment variables
+### 2. Set up Cognito AWS
+Sign in to the AWS Management Console and navigate to the Cognito service.
+
+Click "Manage User Pools."
+
+Click "Create a user pool."
+
+Enter a name for your User Pool (for example, MyAppUserPool).
+
+In the "Step-by-step setup" section, click "Review defaults" or select "Step-by-step" if you want to customize each setting.
+
+If you chose "Step-by-step," you will need to configure the following:
+
+Attributes: Define which user attributes are required (e.g., email) and which are optional. You can also configure whether the username is the primary sign-in method or if email or phone number will be used.
+
+Policies: Set password security requirements (length, capitalization, etc.).
+
+MFA (Multi-Factor Authentication): Configure whether to enable MFA (e.g., with SMS or TOTP) and whether it will be optional or required.
+
+Message customizations: Edit the templates for verification and welcome emails and SMS messages.
+
+Tags: Optional, for organizing AWS resources.
+
+Device access: Configure device recall (optional).
+
+App clients: This is a key step. Create a new "App client" that your application (frontend/backend) will use to interact with Cognito. Be sure to uncheck the "Generate client secret" box if your client is a web or mobile (browser-based) application.
+
+Triggers: Assign AWS Lambda functions to customize authentication flows (optional).
+
+Review: Review all configurations.
+
+Click "Create pool."
+
+Once created, save the User Pool ID and the App Client ID (found in the "General settings" and "App integration" or "App clients" tabs), as you will need them to configure your application.
 
 ### 3. Deploy on Render
 1. Connect your GitHub repository to Render
@@ -73,7 +101,7 @@ After deployment, update the `NEXT_PUBLIC_GRAPHQL_URL` in your frontend service 
 2. **Environment variables**: Ensure all required variables are set in Render
 3. **CORS errors**: Verify the frontend URL is included in the backend CORS configuration
 4. **Database connection**: Check that the MongoDB URI is correct and accessible
-5. **Firebase authentication**: Ensure Firebase service account credentials are properly formatted
+5. **Cognito authentication**: Ensure Cognito service account credentials are properly configuration
 
 ## Local Development
 To run locally:

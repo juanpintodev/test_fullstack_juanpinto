@@ -61,7 +61,7 @@ npm run dev
 
 1. User logs in with Firebase Authentication
 2. Frontend sends GraphQL requests to backend with Firebase ID token
-3. Backend verifies Firebase ID token
+3. Backend verifies Cognito ID token
 4. Backend saves/gets data from MongoDB
 5. Frontend shows the data
 
