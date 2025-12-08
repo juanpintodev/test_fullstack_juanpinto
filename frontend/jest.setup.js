@@ -24,11 +24,23 @@ jest.mock("next/router", () => ({
   },
 }));
 
-// Mock Firebase
-jest.mock("firebase/auth", () => ({
-  getAuth: jest.fn(),
-  signInWithEmailAndPassword: jest.fn(),
-  createUserWithEmailAndPassword: jest.fn(),
-  signOut: jest.fn(),
-  onAuthStateChanged: jest.fn(),
+// Mock react-oidc-context
+jest.mock("react-oidc-context", () => ({
+  useAuth: jest.fn(() => ({
+    isLoading: false,
+    error: null,
+    isAuthenticated: true, // Assuming authenticated by default for tests
+    signinRedirect: jest.fn(),
+    signoutRedirect: jest.fn(),
+    // Mock user object, can be extended as needed
+    user: {
+      profile: {
+        sub: "mock-user-id",
+        email: "test@example.com",
+        name: "Test User",
+      },
+      access_token: "mock-access-token",
+      id_token: "mock-id-token",
+    },
+  })),
 }));
